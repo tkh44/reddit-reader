@@ -1,0 +1,19 @@
+.post {
+    padding: 5px 8px;
+	margin: 5px 0;
+/*	border: 1px solid #DDDDDD;*/
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);	
+}
+
+/*.post:hover{
+	border-color: #C7EEFE;
+	box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+}*/
+
+.title {
+	overflow-x: hidden;
+}
+.score {
+	color: orange;
+}
