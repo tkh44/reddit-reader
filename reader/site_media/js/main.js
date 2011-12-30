@@ -9,12 +9,12 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 	}
 	
 	function handleJSONP(response){
-		var template = reader.postLinkTemplate;
-        Y.each(response.data.children, function(rank, post){
-            if(post.data.is_self === true){
-                template = reader.postSelfTemplate;
+		var template = reddit.postLinkTemplate;
+        Y.each(response.data.children, function(post, rank){
+			if(post.data.is_self === true){
+                template = reddit.postSelfTemplate;
             } 
-            Y.one("#post-container").append(Y.Lang.sub(template, post.data));
+            Y.one("#post-container").append(Y.substitute(template, post.data));
 		});
 	}
 	
@@ -23,17 +23,18 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
         "http://www.reddit.com/r/{ subreddit }.json?limit=100&jsonp={callback}",
 		subreddit = Y.one("#subreddit"),
 		selected = Y.one("#selected-subreddit"),
+		reddit,
 		reader;
 		
 		
-	reader = new Y.JSONPRequest(url, {
+	reddit = new Y.JSONPRequest(url, {
 		format: prepareJSONPUrl,
 		on:{
 			success: handleJSONP
 		}
 	});
 	
-	reader.postLinkTemplate = 
+	reddit.postLinkTemplate = 
 		'<div class="span16 post">'+
 		'<div class="row">'+
 		'<div class="span1">'+
@@ -53,7 +54,7 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 		'</div>'+
 		'</div>';
 		//'<h4><a href="{ url }">{ title }</a></h4>';
-	reader.postSelfTemplate = 
+	reddit.postSelfTemplate = 
 		'<div class="span16 post">'+
 		'<div class="row">'+
 		'<div class="span1">'+
@@ -74,8 +75,19 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 		'</div>'+
 		'</div>';
 	
-	Y.one("#subreddit-form").on("submit", function(e){
-		reader.send(subreddit.get("value"));
-		selected.setContent('<h2>' + subreddit.get("value") + '</h2>');
+	reader = function(){
+		function initialize(){
+			reddit.send("all");
+			Y.one("#subreddit-form").on("submit", function(e){
+				reddit.send(subreddit.get("value"));
+				selected.setContent('<h2>' + subreddit.get("value") + '</h2>');
+			});
+		}
+		return {
+			initialize: initialize
+		};
+	}();
+	Y.on("domready", function(){
+		var reader_el = reader.initialize();
 	});
 });
