@@ -12,7 +12,6 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 			var template = Y.one('#linkPostTemplate').getContent();
 			//We need a different template for self posts
 			if(post.data.is_self === true){
-				console.log(post.data.is_self);
 				template = Y.one('#selfPostTemplate').getContent();
 			}	
 			Y.one("#post-container").append(Y.substitute(template, post.data));
@@ -41,7 +40,6 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 				e.preventDefault();
 				Y.one("#post-container").setContent('');
 				reddit.send(subreddit.get("value"));
-				console.log(subreddit.get("value"));
 				selected.setContent('<h2>' + subreddit.get("value") + '</h2>');
 			});
 		}
