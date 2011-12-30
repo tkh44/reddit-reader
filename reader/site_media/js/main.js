@@ -10,17 +10,17 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 	
 	function handleJSONP(response){
 		var template = reddit.postLinkTemplate;
-        Y.each(response.data.children, function(post, rank){
+		Y.each(response.data.children, function(post, rank){
 			if(post.data.is_self === true){
-                template = reddit.postSelfTemplate;
-            } 
-            Y.one("#post-container").append(Y.substitute(template, post.data));
+				template = reddit.postSelfTemplate;
+			}	
+			Y.one("#post-container").append(Y.substitute(template, post.data));
 		});
 	}
 	
 	//http://www.reddit.com/r/all.json?limit=4&jsonp=?
 	var url = 
-        "http://www.reddit.com/r/{ subreddit }.json?limit=100&jsonp={callback}",
+		"http://www.reddit.com/r/{ subreddit }.json?limit=100&jsonp={callback}",
 		subreddit = Y.one("#subreddit"),
 		selected = Y.one("#selected-subreddit"),
 		reddit,
