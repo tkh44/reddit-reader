@@ -1,6 +1,5 @@
 YUI().use("jsonp", "transition", "substitute", function (Y){
-	
-	
+	//Accept custom callback name and send subreddit with send
 	function prepareJSONPUrl(url, proxy, subreddit){
 		return Y.Lang.sub(url, {
 			callback: proxy,
@@ -9,10 +8,12 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 	}
 	
 	function handleJSONP(response){
-		var template = reddit.postLinkTemplate;
 		Y.each(response.data.children, function(post, rank){
+			var template = Y.one('#linkPostTemplate').getContent();
+			//We need a different template for self posts
 			if(post.data.is_self === true){
-				template = reddit.postSelfTemplate;
+				console.log(post.data.is_self);
+				template = Y.one('#selfPostTemplate').getContent();
 			}	
 			Y.one("#post-container").append(Y.substitute(template, post.data));
 		});
@@ -26,7 +27,6 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 		reddit,
 		reader;
 		
-		
 	reddit = new Y.JSONPRequest(url, {
 		format: prepareJSONPUrl,
 		on:{
@@ -34,52 +34,14 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 		}
 	});
 	
-	reddit.postLinkTemplate = 
-		'<div class="span16 post">'+
-		'<div class="row">'+
-		'<div class="span1">'+
-		'<h4 class="score">{score}</h4>'+
-		'</div>'+
-		'<div class="span14">'+
-		'<h4 class="title"><a href="{url}" target="_blank">{title}</a></h4>'+
-		'<div class="row">'+
-		'<div class="span14 detail">'+
-		'</div>'+
-		'</div>'+	
-		'</div>'+
-		// '<div class="span1 vote">'+
-		// '<a href="up">Up</a>'+
-		// '<a href="down">Down</a>'+
-		// '</div>'+
-		'</div>'+
-		'</div>';
-		//'<h4><a href="{ url }">{ title }</a></h4>';
-	reddit.postSelfTemplate = 
-		'<div class="span16 post">'+
-		'<div class="row">'+
-		'<div class="span1">'+
-		'<h4 class="score">{score}</h4>'+
-		'</div>'+
-		'<div class="span14">'+
-		'<h4 class="title"><a href="{url}" target="_blank">{title}</a></h4>'+
-		'<div class="row">'+
-		'<div class="span14 detail">'+
-		'<p>{selftext}</p>'+
-		'</div>'+
-		'</div>'+	
-		'</div>'+
-		// '<div class="span1 vote">'+
-		// '<a href="up">Up</a>'+
-		// '<a href="down">Down</a>'+
-		// '</div>'+
-		'</div>'+
-		'</div>';
-	
 	reader = function(){
 		function initialize(){
 			reddit.send("all");
 			Y.one("#subreddit-form").on("submit", function(e){
+				e.preventDefault();
+				Y.one("#post-container").setContent('');
 				reddit.send(subreddit.get("value"));
+				console.log(subreddit.get("value"));
 				selected.setContent('<h2>' + subreddit.get("value") + '</h2>');
 			});
 		}
@@ -90,4 +52,5 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 	Y.on("domready", function(){
 		var reader_el = reader.initialize();
 	});
+	//
 });
