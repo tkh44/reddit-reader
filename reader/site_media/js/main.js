@@ -9,23 +9,20 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 	}
 	
 	function handleJSONP(response){
-		for(var i = 0; i < response.data.children.length; i++){
-			if (response.data.children[i].data.is_self === true){
-				var template = reader.postSelfTemplate;
-			}
-			else{
-				var template = reader.postLinkTemplate;
-			}
-			Y.one("#post-container").append(Y.substitute(template, response.data.children[i].data));
-		}
-		
+		var template = reader.postLinkTemplate;
+        Y.each(response.data.children, function(rank, post){
+            if(post.data.is_self === true){
+                template = reader.postSelfTemplate;
+            } 
+            Y.one("#post-container").append(Y.Lang.sub(template, post.data));
+		});
 	}
 	
 	//http://www.reddit.com/r/all.json?limit=4&jsonp=?
-	var url = "http://www.reddit.com/r/{ subreddit }.json?limit=100&jsonp={callback}",
+	var url = 
+        "http://www.reddit.com/r/{ subreddit }.json?limit=100&jsonp={callback}",
 		subreddit = Y.one("#subreddit"),
 		selected = Y.one("#selected-subreddit"),
-		outputDiv = Y.one("#post"),
 		reader;
 		
 		
