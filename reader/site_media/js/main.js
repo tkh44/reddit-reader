@@ -6,15 +6,22 @@ YUI().use("jsonp", "transition", "substitute", function (Y){
 			subreddit: subreddit || "all"
 		});
 	}
-	
+	function fixHTML(string){
+		return string.replace(/\&amp;/g,'&').replace(/\&lt;/g,'<').replace(/\&gt;/g,'>');
+	}
 	function handleJSONP(response){
 		Y.each(response.data.children, function(post, rank){
 			var template = Y.one('#linkPostTemplate').getContent();
 			//We need a different template for self posts
 			if(post.data.is_self === true){
 				template = Y.one('#selfPostTemplate').getContent();
+				Y.one("#post-container").append(Y.substitute(template, post.data));
+				var self_text = fixHTML(post.data.selftext_html);
+				Y.one("#" + post.data.id + "_html").insert(self_text);
+				return false;
 			}	
 			Y.one("#post-container").append(Y.substitute(template, post.data));
+			return false;
 		});
 	}
 	
